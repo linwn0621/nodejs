@@ -5,7 +5,7 @@ const path = require('path')
 const urlModel = require('url')
 const querystring = require('querystring')
 const template = require('art-template')
-
+let bind = require('./bind')
 
 //创建服务器对象
 let app = http.createServer();
@@ -19,6 +19,7 @@ app.listen(3008, () => {
 
 //注册事件，监听请求
 app.on('request', (req, res) => {
+    bind(req, res);
     let method = req.method;
     let urlObj = urlModel.parse(req.url, true)
     let pathname = urlObj.pathname
@@ -31,8 +32,9 @@ app.on('request', (req, res) => {
                 let obj = {
                     data: herosArr
                 }
-                let str = template(path.join(__dirname, './views/index.html'), obj)
-                res.end(str);
+                // let str = template(path.join(__dirname, './views/index.html'), obj)
+                // res.end(str);
+                res.rander("index", obj)
             })
         })
     } else if (method == 'GET' && pathname == '/add.html') {
@@ -41,19 +43,26 @@ app.on('request', (req, res) => {
         //     res.end(data);
         // })
         // 使用模板渲染页面
-        let str = template(path.join(__dirname, './views/add.html'),{});
-        res.end(str);
+        // let str = template(path.join(__dirname, './views/add.html'), {});
+        // res.end(str);
+        res.rander("add", {})
 
     } else if (method == 'GET' && pathname == '/info.html') {
-        fs.readFile(path.join(__dirname, './views/info.html'), 'utf8', (err, data) => {
-            if (err) return console.log(err.message);
-            res.end(data);
-        })
+        // fs.readFile(path.join(__dirname, './views/info.html'), 'utf8', (err, data) => {
+        //     if (err) return console.log(err.message);
+        //     res.end(data);
+        // })
+        // let str = template(path.join(__dirname, './views/info.html'), {});
+        // res.end(str);
+        res.rander("info", {})
     } else if (method == 'GET' && pathname == '/edit.html') {
-        fs.readFile(path.join(__dirname, './views/edit.html'), 'utf8', (err, data) => {
-            if (err) return console.log(err.message);
-            res.end(data);
-        })
+        // fs.readFile(path.join(__dirname, './views/edit.html'), 'utf8', (err, data) => {
+        //     if (err) return console.log(err.message);
+        //     res.end(data);
+        // })
+        // let str = template(path.join(__dirname, './views/edit.html'), {});
+        // res.end(str);
+        res.rander("edit", {})
     } else if (method == 'GET' && pathname == '/node_modules/bootstrap/dist/css/bootstrap.css') {
         fs.readFile(path.join(__dirname, './node_modules/bootstrap/dist/css/bootstrap.css'), 'utf8', (err, data) => {
             if (err) return console.log(err.message);
@@ -72,3 +81,10 @@ app.on('request', (req, res) => {
         res.end(JSON.stringify(obj))
     }
 })
+
+// function bind(req, res) {
+//     res.rander = function name(name, obj) {
+//         let str = template(path.join(__dirname, './views/' + name + ".html"), obj);
+//         res.end(str);
+//     }
+// }
