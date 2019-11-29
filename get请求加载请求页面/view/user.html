@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../jquery-1.12.4.js"></script>
+    <!-- <script src="../app.js"></script> -->
+</head>
+
+<body>
+    <form action="/submit" method="get" id="form">
+        用户名： <input type="text" name="userName"> <br><br>
+        密　码： <input type="text" name="userPwd"><br><br>
+        <input type="submit" class="btn">
+
+
+    </form>
+    <script>
+        $(".btn").click(function (e) {
+            e.preventDefault()
+            var formData = $("form").serialize();
+            $.get({
+                url: "login",
+                data: formData,
+                success: function (res) {
+                    console.log(JSON.parse(res).msg)
+                }
+
+            })
+        })
+    </script>
+</body>
+
+</html>
