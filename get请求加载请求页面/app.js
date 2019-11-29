@@ -3,6 +3,8 @@ var fs = require("fs");
 var http = require("http");
 var path = require("path");
 var urlMode = require("url");
+// 处理post请求发送过来的数据
+const querystring = require('querystring');
 // 创建服务
 var server = http.createServer();
 // 服务端口监听
@@ -22,7 +24,7 @@ server.on("request", (req, res) => {
     var query = userurl.query
     // 判断读取文件
 
-    if (method == "GET" && url == "/") {
+    if (method == "GET" && url == "/" || pathname == "/user.html") {
         fs.readFile(path.join(__dirname, "./view/user.html"), "utf8", (err, data) => {
             if (err) {
                 return console.log(err.message);
@@ -82,6 +84,51 @@ server.on("request", (req, res) => {
 
                 res.end(JSON.stringify(obj));
             })
+        })
+
+    } else if (method == 'GET' && pathname == '/post.html') {
+        fs.readFile(path.join(__dirname, "./view/post.html"), "utf8", (err, data) => {
+            if (err) {
+                console.log(err.message);
+            }
+            res.end(data)
+        })
+    } else if (method == 'POST' && pathname == '/userRegister') {
+        var str = '';
+        req.on('data', chunk => {
+            // post方式发送过来的数据是一块一块的发送过来的，
+            // 只要一有数据发送，就会触发data事件
+            str += chunk
+        });
+        req.on('end', () => {
+            // 当end事件被执行的时候，说明已经接收完了所有的数据
+            // 将post过来的数据转换成对象
+
+            var obj = querystring.parse(str);
+            fs.readFile(path.join(__dirname, "./user.json"), "utf8", (err, data) => {
+                if (err) {
+                    console.log(err.message);
+                }
+                // console.log(data);
+                var arr = JSON.parse(data);
+                arr.push(obj);
+                console.log(arr);
+                // 写入
+                fs.writeFile(path.join(__dirname, "./user.json"), JSON.stringify(arr), (err, data) => {
+                    if (err) {
+                        console.log(err.message);
+                    }
+                    res.writeHeader(200, {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    })
+                    let obj = {
+                        code: 200,
+                        msg: '注册成功'
+                    }
+                    res.end(JSON.stringify(obj));
+                })
+            })
+
         })
 
     } else {
